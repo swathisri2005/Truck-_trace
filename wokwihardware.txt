@@ -1,0 +1,22 @@
+Recommended simulator: Wokwi (best fit)
+Tinkercad lacks built‑in GPS/WiFi; Wokwi natively supports ESP32, WiFi, and a GPS module.
+Hardware (Wokwi)
+ESP32 DevKit v1
+GPS module (NEO‑6M)
+Optional: MPU‑6050 (IMU) for heading smoothing, SSD1306 128x64 OLED for status
+Wiring
+GPS VCC → 3.3V, GND → GND
+GPS TX → ESP32 GPIO16 (RX2)
+GPS RX → ESP32 GPIO17 (TX2)
+Optional I2C (IMU/OLED): SDA → GPIO21, SCL → GPIO22
+ESP32 firmware (flow)
+Connect to WiFi (same network as your PC running Flask on http://<PC_IP>:8080).
+Read NMEA from Serial2 (GPS), parse $GPRMC/$GNRMC for lat, lon, speed (knots → kph), course over ground (heading).
+Maintain odometer_km by integrating distance between successive fixes.
+Every 5–15 seconds, HTTP POST to your API:
+URL: http://<PC_IP>:8080/api/locations
+JSON body:
+Wokwi tips
+Use the ESP32 “GPS Module (NEO‑6M)” part and set its UART to RX2/TX2.
+You can feed simulated GPS paths using a route file (e.g., gps-sim.txt) so your dashboard updates in real time.
+If your PC and Wokwi need to talk, run ESP32 code using HTTPClient to your machine’s LAN IP. On Windows, get it via ipconfig and use http://<that_ip>:8080.
